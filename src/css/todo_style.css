@@ -88,7 +88,21 @@ div.banner {
 .close-save {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  margin-bottom: 25px;
 }
 .close-save div {
-  width: 50%;
+  width: 40%;
+}
+.close-save i {
+  font-size: 30px;
+}
+.close-save i:hover {
+  cursor: pointer;
+}
+
+.dimensions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }

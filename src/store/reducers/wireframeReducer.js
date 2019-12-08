@@ -11,6 +11,12 @@ const wireframeReducer = (state = initState, action) => {
         case 'NAME_CHANGE':
             state.name = action.newName;
             return state;
+        case 'HEIGHT_CHANGE':
+            state.height = action.newHeight;
+            return state;
+        case 'WIDTH_CHANGE':
+            state.width = action.newWidth;
+            return state;
         default:
             return state;
     }

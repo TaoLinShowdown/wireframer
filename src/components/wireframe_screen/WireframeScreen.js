@@ -6,7 +6,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
 import M from "materialize-css";
 
-import { clearWireframe, nameChange } from '../../store/actions/actionCreators';
+import { clearWireframe, nameChange, heightChange, widthChange } from '../../store/actions/actionCreators';
 
 class WireframeScreen extends Component {
   state = {
@@ -61,6 +61,36 @@ class WireframeScreen extends Component {
     this.props.clearWireframe();
   }
 
+  handleZoomIn = () => {
+
+  }
+
+  handleZoomOut = () => {
+
+  }
+
+  handleDimensionsChange = (e) => {
+    if(/^\d+$/.test(e.target.value)) {
+      if(Number(e.target.value) <= 5000 && Number(e.target.value) >= 1){
+        document.getElementById("dimensions-button").classList.remove("disabled");
+      } else {
+        document.getElementById("dimensions-button").classList.add("disabled");
+      }
+    } else {
+      document.getElementById("dimensions-button").classList.add("disabled");
+    }
+  }
+
+  handleUpdateDimensions = () => {
+    const newHeight = Number(document.getElementById("wireframe-height").value);
+    const newWidth = Number(document.getElementById("wireframe-width").value);
+    this.props.heightChange(newHeight);
+    this.props.widthChange(newWidth);
+    this.setState({
+      unsavedChanges: true
+    });
+  }
+
   render() {
     var { name, height, width, controls } = this.props.wireframe;
 
@@ -69,12 +99,25 @@ class WireframeScreen extends Component {
 
         <div className="wireframe-details col s2 cyan lighten-5 z-depth-1">
           <div className="input-field cyan lighten-5">
-            <input placeholder="Placeholder" id="wireframe-name" type="text" defaultValue={name} onChange={this.handleNameChange}/>
+            <input id="wireframe-name" type="text" defaultValue={name} onChange={this.handleNameChange}/>
             <label className="active">Name</label>
           </div>
           <div className="close-save">
-            <div className="btn" onClick={this.handleSave}>Save</div>
-            <div className="btn" onClick={this.handleClose}>Close</div>
+            <i className="material-icons" onClick={this.handleZoomIn}>zoom_in</i>
+            <i className="material-icons" onClick={this.handleZoomOut}>zoom_out</i>
+            <div className="btn-small" onClick={this.handleSave}>Save</div>
+            <div className="btn-small" onClick={this.handleClose}>Close</div>
+          </div>
+          <div className="dimensions">
+            <div className="input-field cyan lighten-5">
+              <input id="wireframe-height" type="text" defaultValue={height} onChange={this.handleDimensionsChange}/>
+              <label className="active">Height</label>
+            </div>
+            <div className="input-field cyan lighten-5">
+              <input id="wireframe-width" type="text" defaultValue={width} onChange={this.handleDimensionsChange}/>
+              <label className="active">Width</label>
+            </div>
+            <div id="dimensions-button" className="btn-small disabled" onClick={this.handleUpdateDimensions}>Update</div>
           </div>
         </div>
 
@@ -86,7 +129,7 @@ class WireframeScreen extends Component {
           controls
         </div>
 
-        <div id="delete-list" className="modal">
+        <div id="close-wireframe" className="modal">
           <div className="modal-content">
           <h4>Return to homescreen?</h4>
           <p>You have unsaved changes. Would you like to save your work first?</p>
@@ -117,6 +160,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     // changeSortOrder: (newOrder) => { dispatch(changeSortOrder(newOrder)) }
     nameChange: (newName) => { dispatch(nameChange(newName)) },
+    heightChange: (newHeight) => { dispatch(heightChange(newHeight)) },
+    widthChange: (newWidth) => { dispatch(widthChange(newWidth)) },
     clearWireframe: () => { dispatch(clearWireframe()) }
   }
 }

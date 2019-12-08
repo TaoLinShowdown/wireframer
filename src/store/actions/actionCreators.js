@@ -41,3 +41,9 @@ export function clearWireframe() {
 export function nameChange(newName) {
     return { type: 'NAME_CHANGE', newName }
 };
+export function heightChange(newHeight) {
+    return { type: 'HEIGHT_CHANGE', newHeight }
+};
+export function widthChange(newWidth) {
+    return { type: 'WIDTH_CHANGE', newWidth }
+};
