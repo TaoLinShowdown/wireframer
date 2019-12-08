@@ -6,7 +6,7 @@ import { getFirestore } from 'redux-firestore';
 import M from 'materialize-css';
 
 import WireframeCard from './WireframeCard.js';
-// import { deleteWireframeSuccess, deleteWireframeError } from '../../store/actions/actionCreators';
+import { selectWireframe } from '../../store/actions/actionCreators';
 
 class WireframeLinks extends React.Component {
 
@@ -23,6 +23,10 @@ class WireframeLinks extends React.Component {
         }).catch(function(error) {
             console.log("FAILED TO DELETE WIREFRAME " + id + error);
         });
+    }
+
+    handleClick = (wireframe) => {
+        this.props.selectWireframe(wireframe);
     }
 
     render() {
@@ -54,7 +58,7 @@ class WireframeLinks extends React.Component {
                             <div className="trash-can btn" onClick={this.openModal.bind(this, wireframe.id)}>
                                 <i className="material-icons trash-can-icon">close</i>
                             </div>
-                            <Link to={'/wireframe/' + wireframe.id} key={wireframe.id}>
+                            <Link to={'/wireframe/' + wireframe.id} key={wireframe.id} onClick={this.handleClick.bind(this, wireframe)}>
                                 <WireframeCard wireframe={wireframe} />
                             </Link>
                         </div>
@@ -77,6 +81,12 @@ class WireframeLinks extends React.Component {
     }
 }
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        selectWireframe: (wireframe) => { dispatch(selectWireframe(wireframe)) }
+    };
+};
+
 const mapStateToProps = (state) => {
     return {
         wireframes: state.firestore.ordered.wireframes,
@@ -84,4 +94,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default compose(connect(mapStateToProps))(WireframeLinks);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(WireframeLinks);

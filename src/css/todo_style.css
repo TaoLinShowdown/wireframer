@@ -34,18 +34,14 @@ div.banner {
   padding-bottom: 5%;
 }
 
+/**********************************/
+/*          HOME SCREEN           */
+/**********************************/
 .home_new_list_button {
   font-size: 32pt;
   padding: 10px;
   margin: 20px;
   height: 70px;
-}
-
-.input-field {
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
-  /* padding-top: 20px; */
 }
 
 .card {
@@ -60,13 +56,6 @@ div.banner {
 }
 .card:active {
   transform: scale(0.999);
-}
-.card .desc {
-  font-size: 20px;
-}
-
-.btn-large i {
-  font-size: 40px;
 }
 
 .modal {
@@ -83,45 +72,23 @@ div.banner {
   background: #ffffff;
 }
 
-.item-buttons {
-  padding-bottom: 20px;
-}
-
-.datepicker-modal {
-  width: 100%;
-}
-
-.assigned_to {
-  font-size: 8px;
-}
-
-.show {
-  display: block;
-}
-.hide {
-  display: none;
-}
-
-.fixed-action-btn.direction-left {
-  position: relative;
-  padding-left: 0px;
-  width: 56px;
-  height: 56px;
-  left: 94%;
-  top: 0px;
-}
-.fixed-action-btn.direction-left .btn-floating {
-  top: -51px;
-}
-.fixed-action-btn.direction-left ul {
-  right: 55px;
-}
-.fixed-action-btn.direction-left li.option {
-  top: 0px;
-}
-
 .wireframe_link_holder {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+/**********************************/
+/*        WIREFRAME SCREEN        */
+/**********************************/
+.wireframe-container {
+  width: 100%;
+}
+
+.close-save {
+  display: flex;
+  justify-content: space-around;
+}
+.close-save div {
+  width: 50%;
 }

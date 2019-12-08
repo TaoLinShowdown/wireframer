@@ -6,6 +6,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
 
 import WireframeLinks from './WireframeLinks.js';
+import { selectWireframe } from '../../store/actions/actionCreators';
 
 class HomeScreen extends Component {
     handleNewList = () => {
@@ -26,6 +27,7 @@ class HomeScreen extends Component {
             ...newWireframe
         }).then(() => {
             this.props.history.push("/wireframe/" + newWireframeId);
+            this.props.selectWireframe(newWireframe);
             console.log("ADDED NEW WIREFRAME " + newWireframeId);
         }).catch((err) => {
             console.log("ADD NEW WIREFRAME ERROR: " + err);
@@ -51,7 +53,7 @@ class HomeScreen extends Component {
                         
                         <div className="home_new_list_container center">
                             <button className="home_new_list_button cyan darken-4 grey-text text-lighten-4 btn waves-effect waves-light" onClick={this.handleNewList}>
-                                Create a New Wireframe
+                                Create New Wireframe
                             </button>
                         </div>
                     </div>
@@ -61,6 +63,12 @@ class HomeScreen extends Component {
     }
 }
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        selectWireframe: (wireframe) => { dispatch(selectWireframe(wireframe)) }
+    };
+};
+
 const mapStateToProps = (state) => {
     return {
         auth: state.firebase.auth
@@ -68,7 +76,7 @@ const mapStateToProps = (state) => {
 };
 
 export default compose(
-    connect(mapStateToProps),
+    connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
       { collection: 'wireframes' },
     ]),

@@ -32,9 +32,12 @@ export function logoutSuccess() {
 
 // HOME SCREEN
 
-export function deleteWireframeSuccess() {
-    return { type: 'DELETE_WIREFRAME_SUCCESS' }
+export function selectWireframe(wireframe) {
+    return { type: 'SELECT_WIREFRAME', wireframe }
 };
-export function deleteWireframeError(error) {
-    return { type: 'DELETE_WIREFRAME_ERROR', error }
+export function clearWireframe() {
+    return { type: 'CLEAR_WIREFRAME' }
+};
+export function nameChange(newName) {
+    return { type: 'NAME_CHANGE', newName }
 };
