@@ -106,3 +106,26 @@ div.banner {
   justify-content: space-around;
   align-items: center;
 }
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.controls * {
+  cursor: pointer;
+}
+.controls div {
+  margin: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+#example-container {
+  height: 80px;
+  width: 120px;
+}

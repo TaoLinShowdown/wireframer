@@ -119,13 +119,31 @@ class WireframeScreen extends Component {
             </div>
             <div id="dimensions-button" className="btn-small disabled" onClick={this.handleUpdateDimensions}>Update</div>
           </div>
+          <div className="controls white z-depth-1">
+            <div>
+              <div id="example-container" className="z-depth-1 grey lighten-4"></div>
+              Container
+            </div>
+            <div>
+              <label>Label</label>
+              Label
+            </div>
+            <div>
+              <button className="btn">Submit</button>
+              Button
+            </div>
+            <div>
+              <input type="text" value="" placeholder="Example Textfield" />
+              Textfield
+            </div>
+          </div>
         </div>
 
-        <div className="wireframe col s8 white">
+        <div className="wireframe col s8 white z-depth-1">
           wireframe
         </div>
 
-        <div className="control-properties col s2 cyan lighten-5">
+        <div className="control-properties col s2 cyan lighten-5 z-depth-1">
           controls
         </div>
 
