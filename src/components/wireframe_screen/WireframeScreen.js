@@ -5,12 +5,14 @@ import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
 import M from "materialize-css";
+import Draggable from 'react-draggable';
 
 import { clearWireframe, nameChange, heightChange, widthChange } from '../../store/actions/actionCreators';
 
 class WireframeScreen extends Component {
   state = {
-    unsavedChanges: false
+    unsavedChanges: false,
+    zoom: 1
   }
 
   handleNameChange = (e) => {
@@ -62,11 +64,15 @@ class WireframeScreen extends Component {
   }
 
   handleZoomIn = () => {
-    
+    this.setState({
+      zoom: this.state.zoom + 0.1
+    });
   }
 
   handleZoomOut = () => {
-
+    this.setState({
+      zoom: this.state.zoom - 0.1
+    });
   }
 
   handleDimensionsChange = (e) => {
@@ -93,10 +99,6 @@ class WireframeScreen extends Component {
 
   render() {
     var { name, height, width, controls } = this.props.wireframe;
-    var containerStyle = {
-      height: height,
-      width: width
-    }
 
     return (
       <div className="row">
@@ -143,25 +145,31 @@ class WireframeScreen extends Component {
           </div>
         </div>
 
-        <div className="wireframe-window col s8 blue-grey lighten-5 z-depth-1">
-          <div className="wireframe-container">
-            {controls && controls.map((control) => {
-              var style = {
-                position: 'absolute',
-                background: control['background'],
-                borderColor: control['border-color'],
-                borderRadius: control['border-radius'],
-                borderWidth: control['border-thickness'],
-                fontSize: control['font-size'],
-                height: control['height'],
-                width: control['width'],
-                top: control['y-pos'],
-                left: control['x-pos']                
-              };
-              return (<div key={control.id} className="control">{
-                
-              }</div>)
-            })}
+        <div id="wireframe-window" className="wireframe-window col s8 z-depth-1" style={{
+          height: "700px",
+          overflow: 'auto',
+          padding: '0'
+        }}>
+          <div className="wireframe-container white z-depth-1" style={{
+            height: height,
+            width: width,
+            overflow: 'none',
+            transform: 'scale(' + this.state.zoom + ')'
+          }}>
+            <Draggable defaultPosition={{x:0, y:0}} scale={this.state.zoom} bounds={{
+              left: 0,
+              top: 0,
+              right: width - 100,
+              bottom: height - 100,
+            }}>
+              <div style={{
+                background: "gray",
+                width: "100px",
+                height: "100px"
+              }}>
+                LOL
+              </div>
+            </Draggable>
           </div>
         </div>
 

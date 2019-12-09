@@ -130,8 +130,10 @@ div.banner {
   width: 120px;
 }
 
-.wireframe-container {
-  min-height: 590px;
-  height: 100%;
-  width: 100%;
+.wireframe-window {
+  background: var(--swatch-foundation);
+  display: flex;
+  justify-content: center;
+  align-items: center
+  ;
 }
