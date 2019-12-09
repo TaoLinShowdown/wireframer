@@ -129,3 +129,9 @@ div.banner {
   height: 80px;
   width: 120px;
 }
+
+.wireframe-container {
+  min-height: 590px;
+  height: 100%;
+  width: 100%;
+}

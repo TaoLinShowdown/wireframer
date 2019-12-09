@@ -62,7 +62,7 @@ class WireframeScreen extends Component {
   }
 
   handleZoomIn = () => {
-
+    
   }
 
   handleZoomOut = () => {
@@ -93,9 +93,13 @@ class WireframeScreen extends Component {
 
   render() {
     var { name, height, width, controls } = this.props.wireframe;
+    var containerStyle = {
+      height: height,
+      width: width
+    }
 
     return (
-      <div className="wireframe-container row">
+      <div className="row">
 
         <div className="wireframe-details col s2 cyan lighten-5 z-depth-1">
           <div className="input-field cyan lighten-5">
@@ -133,14 +137,32 @@ class WireframeScreen extends Component {
               Button
             </div>
             <div>
-              <input type="text" value="" placeholder="Example Textfield" />
+              <input type="text" value="" readOnly placeholder="Example Textfield" />
               Textfield
             </div>
           </div>
         </div>
 
-        <div className="wireframe col s8 white z-depth-1">
-          wireframe
+        <div className="wireframe-window col s8 blue-grey lighten-5 z-depth-1">
+          <div className="wireframe-container">
+            {controls && controls.map((control) => {
+              var style = {
+                position: 'absolute',
+                background: control['background'],
+                borderColor: control['border-color'],
+                borderRadius: control['border-radius'],
+                borderWidth: control['border-thickness'],
+                fontSize: control['font-size'],
+                height: control['height'],
+                width: control['width'],
+                top: control['y-pos'],
+                left: control['x-pos']                
+              };
+              return (<div key={control.id} className="control">{
+                
+              }</div>)
+            })}
+          </div>
         </div>
 
         <div className="control-properties col s2 cyan lighten-5 z-depth-1">
