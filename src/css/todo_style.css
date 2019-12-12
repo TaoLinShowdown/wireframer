@@ -128,12 +128,43 @@ div.banner {
 #example-container {
   height: 80px;
   width: 120px;
+  background: #eceff1;
+  border: 1px solid black;
+  border-radius: 3px;
 }
+#example-label {
+  /* all: unset; */
+}
+#example-button {
+  background: #FFFFFF;
+  border: 2px solid black;
+  border-radius: 5px;
+  color: black;
+  font-size: 11px;
+  height: 30px;
+  width: 70px;
+}
+#example-textfield {
+  border: 1px solid black;
+  transition: none;
+  background-color: white;
+}
+/* ::placeholder {
+  color: black;
+} */
 
 .wireframe-window {
   background: var(--swatch-foundation);
-  display: flex;
-  justify-content: center;
-  align-items: center
-  ;
+  display: block;
+}
+
+#control-properties {
+  min-height: 500px;
+}
+
+.selected{
+  display: block;
+}
+.unselected {
+  display: none;
 }

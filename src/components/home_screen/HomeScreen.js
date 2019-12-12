@@ -12,8 +12,8 @@ class HomeScreen extends Component {
     handleNewList = () => {
         const newWireframe = {
             name: "Unknown",
-            width: 600,
-            height: 800,
+            width: 800,
+            height: 700,
             controls: [],
             last_access: new Date(),
             userid: this.props.auth.uid

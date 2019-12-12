@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import { Redirect, Link } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
@@ -7,26 +7,40 @@ import { getFirestore } from 'redux-firestore';
 import M from "materialize-css";
 import Draggable from 'react-draggable';
 
-import { clearWireframe, nameChange, heightChange, widthChange } from '../../store/actions/actionCreators';
+import { clearWireframe, 
+          nameChange, 
+          heightChange, 
+          widthChange, 
+          addContainer, 
+          addLabel, 
+          addButton, 
+          addTextfield, 
+          deleteControl, 
+          duplicateControl,
+          repositionControl, } from '../../store/actions/actionCreators';
+import { relative } from 'path';
 
 class WireframeScreen extends Component {
   state = {
     unsavedChanges: false,
-    zoom: 1
+    zoom: 1,
+    selectedControl: -1
+  }
+
+  componentDidMount = () => {
+    document.onkeydown = this.handleKeyDown;
   }
 
   handleNameChange = (e) => {
     this.props.nameChange(e.target.value);
-    this.setState({
-      unsavedChanges: true
-    });
+    this.setState({ unsavedChanges: true });
   }
 
   handleSave = () => {
     // grab the wireframe in store
     // push it to firebase
     const firestore = getFirestore();
-    firestore.collection('wireframes').doc(this.props.wireframe.id).update({
+    firestore.collection('wireframes').doc(this.props.wireframeid).update({
       ...this.props.wireframe,
       last_access: new Date()
     }).then(() => {
@@ -43,8 +57,8 @@ class WireframeScreen extends Component {
     // check if changes were saved
     // if not, pull up modal to notify user to save changes
     if(!this.state.unsavedChanges) {
-      this.props.history.push("/");
       this.props.clearWireframe();
+      this.props.history.push("/");
     } else {
       var elems = document.querySelectorAll('.modal');
       var mymodals = M.Modal.init(elems);
@@ -54,24 +68,24 @@ class WireframeScreen extends Component {
 
   handleSaveAndClose = () => {
     this.handleSave();
-    this.props.history.push("/");
     this.props.clearWireframe();
+    this.props.history.push("/");
   }
 
   handleJustClose = () => {
-    this.props.history.push("/");
     this.props.clearWireframe();
+    this.props.history.push("/");
   }
 
   handleZoomIn = () => {
     this.setState({
-      zoom: this.state.zoom + 0.1
+      zoom: this.state.zoom * 2
     });
   }
 
   handleZoomOut = () => {
     this.setState({
-      zoom: this.state.zoom - 0.1
+      zoom: this.state.zoom / 2
     });
   }
 
@@ -92,13 +106,79 @@ class WireframeScreen extends Component {
     const newWidth = Number(document.getElementById("wireframe-width").value);
     this.props.heightChange(newHeight);
     this.props.widthChange(newWidth);
-    this.setState({
-      unsavedChanges: true
-    });
+    this.setState({ unsavedChanges: true });
+  }
+
+  handleAddContainer = () => {
+    this.props.addContainer();
+    this.setState({ unsavedChanges: true });
+  }
+
+  handleAddLabel = () => {
+    this.props.addLabel();
+    this.setState({ unsavedChanges: true });
+  }
+
+  handleAddButton = () => {
+    this.props.addButton();
+    this.setState({ unsavedChanges: true });
+  }
+
+  handleAddTextfield = () => {
+    this.props.addTextfield();
+    this.setState({ unsavedChanges: true });
+  }
+
+  handleSelectControl = (id, e) => {
+    this.setState({ selectedControl: id });
+  }
+
+  handleDeselect = (e) => {
+    if(e.target.id === "wireframe-container"){
+      this.setState({ selectedControl: -1 });
+    }
+  }
+
+  handleKeyDown = (e) => {
+    const { keyCode, ctrlKey } = e;
+    if(keyCode === 46) {
+      e.preventDefault();
+      this.handleDeleteControl();
+    } else if(keyCode === 68 && ctrlKey) {
+      e.preventDefault();
+      this.handleDuplicateControl();
+    }
+  }
+
+  handleDeleteControl = () => {
+    if(this.state.selectedControl !== -1) {
+      this.props.deleteControl(this.state.selectedControl);
+      this.setState({ unsavedChanges: true });
+    }
+  }
+
+  handleDuplicateControl = () => {
+    if(this.state.selectedControl !== -1) {
+      this.props.duplicateControl(this.state.selectedControl);
+      this.setState({ unsavedChanges: true });
+    }
+  }
+
+  handleRepostion = (e, i) => {
+    const { x, y } = i;
+    console.log(x, y);
+    console.log(this.state.selectedControl);
+    this.props.repositionControl(x, y, this.state.selectedControl);
+    this.setState({ unsavedChanges: true });
   }
 
   render() {
+    if (!this.props.auth.uid) {
+      return <Redirect to="/" />;
+    }
+
     var { name, height, width, controls } = this.props.wireframe;
+    console.log(name, height, width, controls);
 
     return (
       <div className="row">
@@ -127,54 +207,211 @@ class WireframeScreen extends Component {
           </div>
           <div className="controls white z-depth-1">
             <div>
-              <div id="example-container" className="z-depth-1 grey lighten-4"></div>
-              Container
+              <div id="example-container"></div>
+              <div className="btn-small" onClick={this.handleAddContainer}>Add Container</div>
             </div>
             <div>
-              <label>Label</label>
-              Label
+              <div id="example-label">Example Label</div>
+              <div className="btn-small" onClick={this.handleAddLabel}>Add Label</div>
             </div>
             <div>
-              <button className="btn">Submit</button>
-              Button
+              <button id="example-button">Submit</button>
+              <div className="btn-small" onClick={this.handleAddButton}>Add Button</div>
             </div>
             <div>
-              <input type="text" value="" readOnly placeholder="Example Textfield" />
-              Textfield
+              <input type="text" value="" readOnly placeholder="Example Textfield" id="example-textfield"/>
+              <div className="btn-small" onClick={this.handleAddTextfield}>Add Textfield</div>
             </div>
           </div>
         </div>
 
         <div id="wireframe-window" className="wireframe-window col s8 z-depth-1" style={{
-          height: "700px",
+          height: "753px",
           overflow: 'auto',
           padding: '0'
         }}>
-          <div className="wireframe-container white z-depth-1" style={{
-            height: height,
-            width: width,
-            overflow: 'none',
-            transform: 'scale(' + this.state.zoom + ')'
+          <div id="wireframe-container" className="wireframe-container white z-depth-1" onClick={this.handleDeselect} style={{
+            position: relative,
+            height: height + "px",
+            width: width + "px",
+            overflow: 'visible',
+            transform: 'scale(' + this.state.zoom + ')',
+            transformOrigin: 'top left'
           }}>
-            <Draggable defaultPosition={{x:0, y:0}} scale={this.state.zoom} bounds={{
-              left: 0,
-              top: 0,
-              right: width - 100,
-              bottom: height - 100,
-            }}>
-              <div style={{
-                background: "gray",
-                width: "100px",
-                height: "100px"
-              }}>
-                LOL
-              </div>
-            </Draggable>
+            {controls && controls.map((control) => {
+              var style = {
+                position: "absolute",
+                top: control['y-pos'],
+                left: control['x-pos'],
+                height: control['height'] + "px",
+                width: control['width'] + "px",
+                background: control['background'],
+                border: control['border-thickness'] + "px solid " + control['border-color'],
+                borderRadius: control['border-radius'] + "px",
+                fontSize: control['font-size'] + "px",
+                color: control['font-color']
+              };
+              var cornerStyle = {
+                position: "absolute",
+                background: 'white',
+                zIndex: 2,
+                border: "1px black solid",
+                width: "10px",
+                height: "10px"
+              }
+              var selected = this.state.selectedControl === control.id ? "selected" : "unselected";
+              return (
+                <Draggable 
+                  key={control.id} 
+                  scale={this.state.zoom} 
+                  bounds='.wireframe-container'
+                  onMouseDown={this.handleSelectControl.bind(this, control.id)}
+                  onStop={this.handleRepostion} >
+
+                      {control.type === 'container' ? 
+                      <div
+                        id={"control-" + control.id} 
+                        style={{
+                          ...style,
+                          zIndex: 0
+                        }}
+                      >
+                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: control['width'],
+                        }}></div>
+                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-br"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: control['width'],
+                        }}></div>
+                      </div> : 
+
+                      control.type === 'label' ? 
+                      <div
+                        id={"control-" + control.id} 
+                        style={{
+                          ...style,
+                          zIndex: 1
+                        }}
+                      >{control['text']}
+                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: control['width'],
+                        }}></div>
+                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-br"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: control['width'],
+                        }}></div>
+                      </div> :
+
+                      control.type === 'button' ? 
+                      <button
+                        id={"control-" + control.id} 
+                        style={{
+                          ...style,
+                          zIndex: 1
+                        }}
+                      >{control['text']}
+                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: control['width'],
+                        }}></div>
+                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-br"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: control['width'],
+                        }}></div>
+                      </button> :
+                      
+                      <div
+                        style={{
+                          zIndex: 1,
+                          position: 'absolute',
+                          background: 'transparent',
+                          height: control['height'],
+                          width: control['width'],
+                          top: control['y-pos'],
+                          left: control['x-pos'],
+                        }} >
+                        <input 
+                          type='text' 
+                          placeholder={control['text']} 
+                          id={"control-" + control.id} 
+                          style={{
+                            ...style,
+                            top: 0,
+                            left: 0,
+                            zIndex: 1
+                          }} />
+                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
+                          ...cornerStyle,
+                          top: -10,
+                          left: control['width'],
+                        }}></div>
+                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: -10,
+                        }}></div>
+                        <div id={"control-" + control.id + "-br"} className={selected} style={{
+                          ...cornerStyle,
+                          top: control['height'],
+                          left: control['width'],
+                        }}></div>
+                      </div>
+                        
+                      }
+                      
+                </Draggable>
+              )})}
           </div>
         </div>
 
-        <div className="control-properties col s2 cyan lighten-5 z-depth-1">
-          controls
+        <div id="control-properties" className="control-properties col s2 cyan lighten-5 z-depth-1">
+          {this.state.selectedControl === -1 ? 
+            <div>No control selected</div> :
+            <div>Control {this.state.selectedControl}</div>
+          }
         </div>
 
         <div id="close-wireframe" className="modal">
@@ -195,11 +432,13 @@ class WireframeScreen extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  var id = ownProps.match.params.id;
+  const id = ownProps.match.params.id;
+  const { wireframes } = state.firestore.data;
+  const wireframe = state.wireframe ? state.wireframe : wireframes[id]
 
   return {
     auth: state.firebase.auth,
-    wireframe: state.wireframe,
+    wireframe: wireframe,
     wireframeid: id
   };
 };
@@ -210,7 +449,14 @@ const mapDispatchToProps = (dispatch) => {
     nameChange: (newName) => { dispatch(nameChange(newName)) },
     heightChange: (newHeight) => { dispatch(heightChange(newHeight)) },
     widthChange: (newWidth) => { dispatch(widthChange(newWidth)) },
-    clearWireframe: () => { dispatch(clearWireframe()) }
+    clearWireframe: () => { dispatch(clearWireframe()) },
+    addContainer: () => { dispatch(addContainer()) },
+    addLabel: () => { dispatch(addLabel()) },
+    addButton: () => { dispatch(addButton()) },
+    addTextfield: () => { dispatch(addTextfield()) },
+    deleteControl: (id) => { dispatch(deleteControl(id)) },
+    duplicateControl: (id) => { dispatch(duplicateControl(id)) },
+    repositionControl: (x, y, id) => { dispatch(repositionControl(x, y, id)) },
   }
 }
 

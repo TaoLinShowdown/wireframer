@@ -47,3 +47,24 @@ export function heightChange(newHeight) {
 export function widthChange(newWidth) {
     return { type: 'WIDTH_CHANGE', newWidth }
 };
+export function addContainer() {
+    return { type: 'ADD_CONTAINER' }
+};
+export function addLabel() {
+    return { type: 'ADD_LABEL' }
+};
+export function addButton() {
+    return { type: 'ADD_BUTTON' }
+};
+export function addTextfield() {
+    return { type: 'ADD_TEXTFIELD' }
+};
+export function deleteControl(controlid) {
+    return { type: 'DELETE_CONTROL', controlid }
+};
+export function duplicateControl(controlid) {
+    return { type: 'DUPLICATE_CONTROL', controlid }
+};
+export function repositionControl(deltax, deltay, controlid) {
+    return { type: 'REPOSITION_CONTROL', deltax, deltay, controlid }
+};
