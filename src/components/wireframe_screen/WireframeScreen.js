@@ -255,22 +255,16 @@ class WireframeScreen extends Component {
                 fontSize: control['font-size'] + "px",
                 color: control['font-color']
               };
-              var cornerStyle = {
-                position: "absolute",
-                background: 'white',
-                zIndex: 2,
-                border: "1px black solid",
-                width: "10px",
-                height: "10px"
-              }
               var selected = this.state.selectedControl === control.id ? true : false;
               return (
                 <Rnd
                   key={control.id}
+                  onMouseDown={this.handleSelectControl.bind(this, control.id)}
                   scale={this.state.zoom}
                   bounds='parent'
                   size={{ width: control['width'], height: control['height'] }}
                   position={{ x: control['x-pos'], y: control['y-pos'] }}
+                  style={{ zIndex: control.type === "container" ? 0 : 1 }}
                   onDragStop={this.handleReposition}
                   onResizeStop={this.handleResize}
                   enableResizing={{
@@ -289,10 +283,27 @@ class WireframeScreen extends Component {
                     topLeft: <WireframeControlResizeComponent />,
                     topRight: <WireframeControlResizeComponent />,
                   }} >
-                  <div
-                    onMouseDown={this.handleSelectControl.bind(this, control.id)}
-                    style={style}>
-                  </div>
+                  {
+                    control.type === "container" ?
+                      <div
+                        style={style}>
+                      </div> : 
+                    control.type === "label" ? 
+                      <div
+                        style={style}>
+                        {control.text}
+                      </div> : 
+                    control.type === "button" ?
+                      <button
+                        style={style}>
+                        {control.text}
+                      </button> :
+                    <input
+                      type="text"
+                      readOnly
+                      style={style}
+                      placeholder={control.text} />
+                  }
                 </Rnd>
               )})}
           </div>
