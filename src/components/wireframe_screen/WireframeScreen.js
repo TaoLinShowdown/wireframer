@@ -5,20 +5,21 @@ import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
 import M from "materialize-css";
-import Draggable from 'react-draggable';
+import { Rnd } from 'react-rnd';
 
 import { clearWireframe, 
-          nameChange, 
-          heightChange, 
-          widthChange, 
-          addContainer, 
-          addLabel, 
-          addButton, 
-          addTextfield, 
-          deleteControl, 
-          duplicateControl,
-          repositionControl, } from '../../store/actions/actionCreators';
-import { relative } from 'path';
+        nameChange, 
+        heightChange, 
+        widthChange, 
+        addContainer, 
+        addLabel, 
+        addButton, 
+        addTextfield, 
+        deleteControl, 
+        duplicateControl,
+        repositionControl,
+        resizeControl, } from '../../store/actions/actionCreators';
+import WireframeControlResizeComponent from './WireframeControlResizeComponent'
 
 class WireframeScreen extends Component {
   state = {
@@ -129,7 +130,7 @@ class WireframeScreen extends Component {
     this.setState({ unsavedChanges: true });
   }
 
-  handleSelectControl = (id, e) => {
+  handleSelectControl = (id) => {
     this.setState({ selectedControl: id });
   }
 
@@ -164,10 +165,16 @@ class WireframeScreen extends Component {
     }
   }
 
-  handleRepostion = (e, i) => {
-    const { x, y } = i;
-    console.log(x, y);
-    console.log(this.state.selectedControl);
+  handleReposition = (e, d) => {
+    const { x, y } = d;
+    this.props.repositionControl(x, y, this.state.selectedControl);
+    this.setState({ unsavedChanges: true });
+  }
+
+  handleResize = (e, d, r, delta, pos) => {
+    const { height, width } = delta;
+    const { x, y } = pos;
+    this.props.resizeControl(height, width, this.state.selectedControl);
     this.props.repositionControl(x, y, this.state.selectedControl);
     this.setState({ unsavedChanges: true });
   }
@@ -178,7 +185,7 @@ class WireframeScreen extends Component {
     }
 
     var { name, height, width, controls } = this.props.wireframe;
-    console.log(name, height, width, controls);
+    // console.log(name, height, width, controls);
 
     return (
       <div className="row">
@@ -231,7 +238,7 @@ class WireframeScreen extends Component {
           padding: '0'
         }}>
           <div id="wireframe-container" className="wireframe-container white z-depth-1" onClick={this.handleDeselect} style={{
-            position: relative,
+            position: "relative",
             height: height + "px",
             width: width + "px",
             overflow: 'visible',
@@ -240,11 +247,8 @@ class WireframeScreen extends Component {
           }}>
             {controls && controls.map((control) => {
               var style = {
-                position: "absolute",
-                top: control['y-pos'],
-                left: control['x-pos'],
-                height: control['height'] + "px",
-                width: control['width'] + "px",
+                height: "100%",
+                width: "100%",
                 background: control['background'],
                 border: control['border-thickness'] + "px solid " + control['border-color'],
                 borderRadius: control['border-radius'] + "px",
@@ -259,150 +263,37 @@ class WireframeScreen extends Component {
                 width: "10px",
                 height: "10px"
               }
-              var selected = this.state.selectedControl === control.id ? "selected" : "unselected";
+              var selected = this.state.selectedControl === control.id ? true : false;
               return (
-                <Draggable 
-                  key={control.id} 
-                  scale={this.state.zoom} 
-                  bounds='.wireframe-container'
-                  onMouseDown={this.handleSelectControl.bind(this, control.id)}
-                  onStop={this.handleRepostion} >
-
-                      {control.type === 'container' ? 
-                      <div
-                        id={"control-" + control.id} 
-                        style={{
-                          ...style,
-                          zIndex: 0
-                        }}
-                      >
-                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: control['width'],
-                        }}></div>
-                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-br"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: control['width'],
-                        }}></div>
-                      </div> : 
-
-                      control.type === 'label' ? 
-                      <div
-                        id={"control-" + control.id} 
-                        style={{
-                          ...style,
-                          zIndex: 1
-                        }}
-                      >{control['text']}
-                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: control['width'],
-                        }}></div>
-                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-br"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: control['width'],
-                        }}></div>
-                      </div> :
-
-                      control.type === 'button' ? 
-                      <button
-                        id={"control-" + control.id} 
-                        style={{
-                          ...style,
-                          zIndex: 1
-                        }}
-                      >{control['text']}
-                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: control['width'],
-                        }}></div>
-                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-br"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: control['width'],
-                        }}></div>
-                      </button> :
-                      
-                      <div
-                        style={{
-                          zIndex: 1,
-                          position: 'absolute',
-                          background: 'transparent',
-                          height: control['height'],
-                          width: control['width'],
-                          top: control['y-pos'],
-                          left: control['x-pos'],
-                        }} >
-                        <input 
-                          type='text' 
-                          placeholder={control['text']} 
-                          id={"control-" + control.id} 
-                          style={{
-                            ...style,
-                            top: 0,
-                            left: 0,
-                            zIndex: 1
-                          }} />
-                        <div id={"control-" + control.id + "-tl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-tr"} className={selected} style={{
-                          ...cornerStyle,
-                          top: -10,
-                          left: control['width'],
-                        }}></div>
-                        <div id={"control-" + control.id + "-bl"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: -10,
-                        }}></div>
-                        <div id={"control-" + control.id + "-br"} className={selected} style={{
-                          ...cornerStyle,
-                          top: control['height'],
-                          left: control['width'],
-                        }}></div>
-                      </div>
-                        
-                      }
-                      
-                </Draggable>
+                <Rnd
+                  key={control.id}
+                  scale={this.state.zoom}
+                  bounds='parent'
+                  size={{ width: control['width'], height: control['height'] }}
+                  position={{ x: control['x-pos'], y: control['y-pos'] }}
+                  onDragStop={this.handleReposition}
+                  onResizeStop={this.handleResize}
+                  enableResizing={{
+                    top: false,
+                    right: false,
+                    bottom: false,
+                    left: false,
+                    bottomLeft: selected,
+                    bottomRight: selected,
+                    topLeft: selected,
+                    topRight: selected,
+                  }}
+                  resizeHandleComponent={{
+                    bottomLeft: <WireframeControlResizeComponent />,
+                    bottomRight: <WireframeControlResizeComponent />,
+                    topLeft: <WireframeControlResizeComponent />,
+                    topRight: <WireframeControlResizeComponent />,
+                  }} >
+                  <div
+                    onMouseDown={this.handleSelectControl.bind(this, control.id)}
+                    style={style}>
+                  </div>
+                </Rnd>
               )})}
           </div>
         </div>
@@ -457,6 +348,7 @@ const mapDispatchToProps = (dispatch) => {
     deleteControl: (id) => { dispatch(deleteControl(id)) },
     duplicateControl: (id) => { dispatch(duplicateControl(id)) },
     repositionControl: (x, y, id) => { dispatch(repositionControl(x, y, id)) },
+    resizeControl: (height, width, id) => { dispatch(resizeControl(height, width, id)) },
   }
 }
 

@@ -101,9 +101,14 @@ const wireframeReducer = (state = initState, action) => {
             state.controls.push(controlToDuplicate);
             return state;
         case 'REPOSITION_CONTROL':
-            // const { deltax, deltay, controlid } = action;
-            // state.controls[controlid]['y-pos'] += deltay;
-            // state.controls[controlid]['x-pos'] += deltax;
+            const { deltax, deltay} = action;
+            state.controls[action.controlid]['y-pos'] = deltay;
+            state.controls[action.controlid]['x-pos'] = deltax;
+            return state;
+        case 'RESIZE_CONTROL':
+            const { height, width} = action;
+            state.controls[action.controlid]['height'] += height;
+            state.controls[action.controlid]['width'] += width;
             return state;
         default:
             return state;

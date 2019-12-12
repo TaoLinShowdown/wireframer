@@ -68,3 +68,6 @@ export function duplicateControl(controlid) {
 export function repositionControl(deltax, deltay, controlid) {
     return { type: 'REPOSITION_CONTROL', deltax, deltay, controlid }
 };
+export function resizeControl(height, width, controlid) {
+    return { type: 'RESIZE_CONTROL', height, width, controlid }
+};
