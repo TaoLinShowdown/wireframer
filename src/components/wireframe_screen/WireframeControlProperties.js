@@ -112,7 +112,7 @@ class WireframeControlProperties extends Component {
                 </div>
 
                 <div>
-                    Border Thickness:
+                    Border Thickness: {control['border-thickness']}
                     <Slider 
                         min={0}
                         value={control['border-thickness']}
@@ -121,7 +121,7 @@ class WireframeControlProperties extends Component {
                 </div>
 
                 <div>
-                    Border Radius:
+                    Border Radius: {control['border-radius']}
                     <Slider
                         min={0}
                         value={control['border-radius']}
