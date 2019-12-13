@@ -149,9 +149,9 @@ div.banner {
   transition: none;
   background-color: white;
 }
-/* ::placeholder {
+::placeholder {
   color: black;
-} */
+}
 
 .wireframe-window {
   background: var(--swatch-foundation);
@@ -159,7 +159,8 @@ div.banner {
 }
 
 #control-properties {
-  min-height: 500px;
+  height: 753px;
+  overflow: auto;
 }
 
 .selected{

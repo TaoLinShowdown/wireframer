@@ -71,3 +71,24 @@ export function repositionControl(deltax, deltay, controlid) {
 export function resizeControl(height, width, controlid) {
     return { type: 'RESIZE_CONTROL', height, width, controlid }
 };
+export function textChange(newText, controlid) {
+    return { type: 'TEXT_CHANGE', newText, controlid }
+};
+export function fontSizeChange(newFontSize, controlid) {
+    return { type: 'FONTSIZE_CHANGE', newFontSize, controlid }
+};
+export function textColorChange(newColor, controlid) {
+    return { type: 'TEXTCOLOR_CHANGE', newColor, controlid }
+};
+export function backgroundChange(newColor, controlid) {
+    return { type: 'BACKGROUND_CHANGE', newColor, controlid }
+};
+export function borderColorChange(newColor, controlid) {
+    return { type: 'BORDERCOLOR_CHANGE', newColor, controlid }
+};
+export function borderThicknessChange(newThicc, controlid) {
+    return { type: 'BORDERTHICKNESS_CHANGE', newThicc, controlid }
+};
+export function borderRadiusChange(newRad, controlid) {
+    return { type: 'BORDERRADIUS_CHANGE', newRad, controlid }
+};

@@ -19,7 +19,8 @@ import { clearWireframe,
         duplicateControl,
         repositionControl,
         resizeControl, } from '../../store/actions/actionCreators';
-import WireframeControlResizeComponent from './WireframeControlResizeComponent'
+import WireframeControlResizeComponent from './WireframeControlResizeComponent';
+import WireframeControlProperties from './WireframeControlProperties';
 
 class WireframeScreen extends Component {
   state = {
@@ -112,22 +113,22 @@ class WireframeScreen extends Component {
 
   handleAddContainer = () => {
     this.props.addContainer();
-    this.setState({ unsavedChanges: true });
+    this.setState({ unsavedChanges: true, selectedControl: this.props.wireframe.controls.length - 1 });
   }
 
   handleAddLabel = () => {
     this.props.addLabel();
-    this.setState({ unsavedChanges: true });
+    this.setState({ unsavedChanges: true, selectedControl: this.props.wireframe.controls.length - 1 });
   }
 
   handleAddButton = () => {
     this.props.addButton();
-    this.setState({ unsavedChanges: true });
+    this.setState({ unsavedChanges: true, selectedControl: this.props.wireframe.controls.length - 1 });
   }
 
   handleAddTextfield = () => {
     this.props.addTextfield();
-    this.setState({ unsavedChanges: true });
+    this.setState({ unsavedChanges: true, selectedControl: this.props.wireframe.controls.length - 1 });
   }
 
   handleSelectControl = (id) => {
@@ -154,14 +155,14 @@ class WireframeScreen extends Component {
   handleDeleteControl = () => {
     if(this.state.selectedControl !== -1) {
       this.props.deleteControl(this.state.selectedControl);
-      this.setState({ unsavedChanges: true });
+      this.setState({ unsavedChanges: true, selectedControl: -1 });
     }
   }
 
   handleDuplicateControl = () => {
     if(this.state.selectedControl !== -1) {
       this.props.duplicateControl(this.state.selectedControl);
-      this.setState({ unsavedChanges: true });
+      this.setState({ unsavedChanges: true, selectedControl: this.props.wireframe.controls.length - 1 });
     }
   }
 
@@ -253,7 +254,7 @@ class WireframeScreen extends Component {
                 border: control['border-thickness'] + "px solid " + control['border-color'],
                 borderRadius: control['border-radius'] + "px",
                 fontSize: control['font-size'] + "px",
-                color: control['font-color']
+                color: control['font-color'],
               };
               var selected = this.state.selectedControl === control.id ? true : false;
               return (
@@ -300,7 +301,6 @@ class WireframeScreen extends Component {
                       </button> :
                     <input
                       type="text"
-                      readOnly
                       style={style}
                       placeholder={control.text} />
                   }
@@ -312,7 +312,9 @@ class WireframeScreen extends Component {
         <div id="control-properties" className="control-properties col s2 cyan lighten-5 z-depth-1">
           {this.state.selectedControl === -1 ? 
             <div>No control selected</div> :
-            <div>Control {this.state.selectedControl}</div>
+            <WireframeControlProperties 
+              selectedControl={this.state.selectedControl}
+              changesMade={() => {this.setState({ unsavedChanges: true })}} />
           }
         </div>
 
@@ -347,7 +349,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // changeSortOrder: (newOrder) => { dispatch(changeSortOrder(newOrder)) }
     nameChange: (newName) => { dispatch(nameChange(newName)) },
     heightChange: (newHeight) => { dispatch(heightChange(newHeight)) },
     widthChange: (newWidth) => { dispatch(widthChange(newWidth)) },
