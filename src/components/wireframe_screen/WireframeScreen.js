@@ -82,13 +82,13 @@ class WireframeScreen extends Component {
   handleZoomIn = () => {
     this.setState({
       zoom: this.state.zoom * 2
-    });
+    }, () => { this.forceUpdate() });
   }
 
   handleZoomOut = () => {
     this.setState({
       zoom: this.state.zoom / 2
-    });
+    }, () => { this.forceUpdate() });
   }
 
   handleDimensionsChange = (e) => {
@@ -177,7 +177,7 @@ class WireframeScreen extends Component {
     const { x, y } = pos;
     this.props.resizeControl(height, width, this.state.selectedControl);
     this.props.repositionControl(x, y, this.state.selectedControl);
-    this.setState({ unsavedChanges: true });
+    this.setState({ unsavedChanges: true }, () => { this.forceUpdate() });
   }
 
   render() {
