@@ -302,6 +302,7 @@ class WireframeScreen extends Component {
                     <input
                       type="text"
                       style={style}
+                      value={control.text}
                       placeholder={control.text} />
                   }
                 </Rnd>

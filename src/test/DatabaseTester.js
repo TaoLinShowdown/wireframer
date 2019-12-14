@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router-dom'
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { getFirestore } from 'redux-firestore';
@@ -39,16 +40,30 @@ class DatabaseTester extends React.Component {
     }
 
     render() {
-        return (
-            <div>
-                <button onClick={this.handleClear}>Clear Database</button>
-                <button onClick={this.handleReset}>Reset Database</button>
-            </div>)
+        if(!this.props.profile.isLoaded) {
+            return (
+                <div>
+                </div>)
+        } else {
+            if(this.props.profile.admin){
+                return (
+                    <div>
+                        <button onClick={this.handleClear}>Clear Database</button>
+                        <button onClick={this.handleReset}>Reset Database</button>
+                    </div>
+                )
+            } else {
+                return <Redirect to="/" />
+            }
+        }
     }
 }
 
 const mapStateToProps = function (state) {
+    console.log(state.firebase.profile);
+    console.log(state.firebase.auth);
     return {
+        profile: state.firebase.profile,
         auth: state.firebase.auth,
         firebase: state.firebase
     };
