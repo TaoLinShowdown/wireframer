@@ -2,9 +2,6 @@
 by Tao Lin
 
 
-### LIVE DEMO @https://taolinshowdown.github.io/wireframer-gh-pages/
-
-
 ### Set Up
 Prerequisites: node.js
 
